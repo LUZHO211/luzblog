@@ -104,7 +104,9 @@ self.addEventListener('install', e => {
     caches.open(CACHE).then(cache => {
       return cache.addAll(PRECACHE_LIST)
         .then(self.skipWaiting())
-        .catch(err => console.log(err))
+        .catch(err => {
+          //console.log(err)
+        })
     })
   )
 });
@@ -123,7 +125,7 @@ self.addEventListener('activate', event => {
       .filter(cacheName => DEPRECATED_CACHES.includes(cacheName))
       .map(cacheName => caches.delete(cacheName))
   ))
-  console.log('service worker activated.')
+  // console.log('service worker activated.')
   event.waitUntil(self.clients.claim());
 });
 
@@ -211,7 +213,7 @@ self.addEventListener('fetch', event => {
     if (isNavigationReq(event.request)) {
       // you need "preserve logs" to see this log
       // cuz it happened before navigating
-      console.log(`fetch ${event.request.url}`)
+      // console.log(`fetch ${event.request.url}`)
       event.waitUntil(revalidateContent(cached, fetchedCopy))
     }
   }
@@ -224,7 +226,7 @@ self.addEventListener('fetch', event => {
 function sendMessageToAllClients(msg) {
   self.clients.matchAll().then(clients => {
     clients.forEach(client => {
-      console.log(client);
+      // console.log(client);
       client.postMessage(msg)
     })
   })
@@ -256,7 +258,7 @@ function revalidateContent(cachedResp, fetchedResp) {
     .then(([cached, fetched]) => {
       const cachedVer = cached.headers.get('last-modified')
       const fetchedVer = fetched.headers.get('last-modified')
-      console.log(`"${cachedVer}" vs. "${fetchedVer}"`);
+      // console.log(`"${cachedVer}" vs. "${fetchedVer}"`);
       if (cachedVer !== fetchedVer) {
         sendMessageToClientsAsync({
           'command': 'UPDATE_FOUND',
@@ -264,5 +266,7 @@ function revalidateContent(cachedResp, fetchedResp) {
         })
       }
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+      // console.log(err)
+    })
 }

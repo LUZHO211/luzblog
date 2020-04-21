@@ -1,0 +1,301 @@
+---
+layout: post
+title: Dubbo SPI机制
+date: 2019-12-14 20:52:22.000000000 +08:00
+tags: Dubbo
+---
+
+>关于Java SPI机制，之前写过一篇：[Java SPI机制](/2019/10/java-spi)，后来了解到Dubbo也实现了一套SPI机制，而不是直接使用Java的SPI。学习了[Dubbo SPI源码](http://dubbo.apache.org/zh-cn/docs/source_code_guide/dubbo-spi.html)之后，写下这篇文章，很多东西直接借鉴原文，但是目的为了巩固所学，加深理解。
+
+### 一、Dubbo SPI的使用
+
+与Java SPI相似，Dubbo也是通过特定的目录去加载SPI扩展类，只不过两者加载扩展类的目录不同：Java的SPI机制从`META-INF/services`目录加载，Dubbo SPI从`META-INF/dubbo`目录加载。
+
+使用Dubbo SPI时，对外发布的SPI接口必须都加上`@SPI`的注解：
+
+```java
+package com.pandaq.spi;
+
+import org.apache.dubbo.common.extension.SPI;
+
+@SPI
+public interface PrinterServiceV2 {
+
+    String print(String text);
+
+}
+```
+
+实现方提供好实现之后，在自己源代码的`META-INF/dubbo`目录下面新增一个文件，文件名就是SPI接口的全限定名：
+
+![dubbo-spi.png](/assets/images/2020-01/dubbo-spi.png)
+
+接下来看看怎么加载并使用扩展类：
+
+```java
+public class PrinterLauncher {
+
+    public static void main(String[] args) {
+        // Dubbo SPI机制使用
+        ExtensionLoader<PrinterServiceV2> extensionLoader = ExtensionLoader.getExtensionLoader(PrinterServiceV2.class);
+        
+        // 加载 epson-v1 扩展类
+        PrinterServiceV2 printerServiceV2 = extensionLoader.getExtension("epson-v1");
+        printerServiceV2.print("我要打印很多钱");
+        
+        // 加载 epson-v2 扩展类
+        printerServiceV2 = extensionLoader.getExtension("epson-v2");
+        printerServiceV2.print("我要打印很多钱");
+    }
+
+}
+
+// 运行结果
+爱普生第一代打印机为您服务：我要打印很多钱
+爱普生第二代打印机以「10倍」速度为您服务：我要打印很多钱
+```
+
+Dubbo SPI封装在`org.apache.dubbo.common.extension.ExtensionLoader`中，下一节通过源码来分析Dubbo的SPI。
+
+### 二、Dubbo SPI源码
+
+>源码基于Apache Dubbo 2.7.5版本。
+
+第一步：先看看`getExtensionLoader`方法：基于SPI接口Class类型获取ExtensionLoader的实例
+
+```java
+public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Extension type == null");
+        }
+        if (!type.isInterface()) {
+            throw new IllegalArgumentException("Extension type (" + type + ") is not an interface!");
+        }
+        if (!withExtensionAnnotation(type)) {
+            // SPI接口必须加上Dubbo提供的@SPI注解
+            throw new IllegalArgumentException("Extension type (" + type +
+                    ") is not an extension, because it is NOT annotated with @" + SPI.class.getSimpleName() + "!");
+        }
+
+        ExtensionLoader<T> loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(type);
+        if (loader == null) {
+            // 这里直接针对某个SPI接口的Class类型做一个本地缓存，下次再来就从缓存取
+            EXTENSION_LOADERS.putIfAbsent(type, new ExtensionLoader<T>(type));
+            loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(type);
+        }
+        return loader;
+    }
+```
+
+第二步：接下来看看getExtension方法如何创建扩展类的实例
+
+```java
+// 第一节使用的时候说过，Dubbo SPI通过键值对来定义扩展类的加载，这里传入具体的扩展类的key来获取扩展类对象
+// 这个键值对的设计可以实现按需加载，根据key来加载并初始化某个扩展对象，不像Java SPI一次性加载并初始化所有扩展类。
+public T getExtension(String name) {
+    if (StringUtils.isEmpty(name)) {
+        throw new IllegalArgumentException("Extension name == null");
+    }
+    if ("true".equals(name)) {
+        return getDefaultExtension();
+    }
+    // 通过标准的双重检验单例模式来保证key对应扩展类对象的单例
+    // 这里是查询本地缓存，缓存命中就直接返回扩展类对象实例
+    final Holder<Object> holder = getOrCreateHolder(name);
+    Object instance = holder.get();
+    if (instance == null) {
+        synchronized (holder) {
+            instance = holder.get();
+            if (instance == null) {
+                // 重点在createExtension方法：如果缓存没命中，则走这里加载并创建key对应的扩展类对象
+                instance = createExtension(name);
+                holder.set(instance);
+            }
+        }
+    }
+    return (T) instance;
+}
+```
+
+第三步：继续跟踪createExtension方法：加载并创建key对应的扩展类对象，最终通过反射创建扩展类的实例
+
+```java
+private T createExtension(String name) {
+    // getExtensionClasses方法的作用是扫描特定的目录来加载Dubbo SPI定义的键值对映射关系，即key和value，并放到本地缓存中。
+    // value就是实现方提供的具体实现类的全限定名。
+    /* 扫描的目录如下列表：
+         META-INF/services/
+         META-INF/dubbo/
+         META-INF/dubbo/internal/
+         
+       可以看出Dubbo对Java SPI目录做了兼容。
+       
+       getExtensionClasses()方法里面还包含了类加载的过程，基本与Java SPI类似，这里不赘述
+     */
+    Class<?> clazz = getExtensionClasses().get(name);
+    if (clazz == null) {
+        throw findException(name);
+    }
+    try {
+        // 根据getExtensionClasses().get(name)获取到了key对应的扩展类的Class对象，先查询缓存
+        T instance = (T) EXTENSION_INSTANCES.get(clazz);
+        if (instance == null) {
+            // 缓存未命中，则通过反射创建扩展类的示例并添加到本地缓存，下次再来就直接走缓存
+            EXTENSION_INSTANCES.putIfAbsent(clazz, clazz.newInstance());
+            instance = (T) EXTENSION_INSTANCES.get(clazz);
+        }
+        // Dubbo SPI还提供了IoC特性来注入扩展类所依赖的其他对象，不过Dubbo SPI只支持setter方法注入方式
+        // 后面章节将单独对Dubbo SPI的IoC做分析，这里先略过
+        injectExtension(instance);
+        Set<Class<?>> wrapperClasses = cachedWrapperClasses;
+        if (CollectionUtils.isNotEmpty(wrapperClasses)) {
+            for (Class<?> wrapperClass : wrapperClasses) {
+                instance = injectExtension((T) wrapperClass.getConstructor(type).newInstance(instance));
+            }
+        }
+        initExtension(instance);
+        return instance;
+    } catch (Throwable t) {
+        throw new IllegalStateException("Extension instance (name: " + name + ", class: " +
+                type + ") couldn't be instantiated: " + t.getMessage(), t);
+    }
+}
+```
+
+第四步：getExtensionClasses方法的作用是扫描特定的目录来加载Dubbo SPI定义的键值对映射关系，即key和value，并放到本地缓存中：
+
+```java
+private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<>();
+
+private Map<String, Class<?>> getExtensionClasses() {
+    // 先从缓存中获取当前已加载的扩展类的Class对象
+    Map<String, Class<?>> classes = cachedClasses.get();
+    if (classes == null) {  // 缓存未命中则使用双重检验单例模式：加锁
+        synchronized (cachedClasses) {
+            classes = cachedClasses.get();
+            if (classes == null) {
+                // 加载所有的扩展类的Class对象：只是加载扩展类，并未创建实例
+                classes = loadExtensionClasses();
+                // cachedClasses缓存了所有的扩展类的Class对象：这些Class对象可以用来创建对应的扩展类的实例
+                cachedClasses.set(classes);
+            }
+        }
+    }
+    return classes;
+}
+```
+
+第五步：loadExtensionClasses方法加载所有扩展类
+
+```java
+private static final String SERVICES_DIRECTORY = "META-INF/services/";
+private static final String DUBBO_DIRECTORY = "META-INF/dubbo/";
+private static final String DUBBO_INTERNAL_DIRECTORY = DUBBO_DIRECTORY + "internal/";
+
+private Map<String, Class<?>> loadExtensionClasses() {
+    cacheDefaultExtensionName();
+    Map<String, Class<?>> extensionClasses = new HashMap<>();
+    
+    // loadDirectory方法就是实际读取指定目录下的SPI接口全限定名为文件名的文件，并解析
+    loadDirectory(extensionClasses, DUBBO_INTERNAL_DIRECTORY, type.getName(), true);
+    loadDirectory(extensionClasses, DUBBO_INTERNAL_DIRECTORY, type.getName().replace("org.apache", "com.alibaba"), true);
+    loadDirectory(extensionClasses, DUBBO_DIRECTORY, type.getName());
+    loadDirectory(extensionClasses, DUBBO_DIRECTORY, type.getName().replace("org.apache", "com.alibaba"));
+    loadDirectory(extensionClasses, SERVICES_DIRECTORY, type.getName());
+    loadDirectory(extensionClasses, SERVICES_DIRECTORY, type.getName().replace("org.apache", "com.alibaba"));
+    
+    // loadExtensionClasses()结束之后，就可以得到所有的扩展类的Class对象
+    // 例如有两个扩展类：
+    //     epson-v1 = com.epson.printer.EpsonV1Printer
+    //     epson-v2 = com.epson.printer.EpsonV2Printer
+    // 就会得到：Map<"epson-v1", Class<EpsonV1Printer>> 和 Map<"epson-v2", Class<EpsonV2Printer>>
+    // 后面如果想要创建某个扩展类的实例，直接通过key获取对应扩展类的Class对象，通过反射就可以创建
+    // 这就与第三步中的createExtension方法中反射创建实例对应起来了
+    return extensionClasses;
+}
+```
+
+loadExtensionClasses()结束之后，就可以得到所有的扩展类的Class对象，而且扩展类的Class对象是以key-value方式缓存起来，后面如果想要创建某个扩展类的实例，直接通过key获取对应扩展类的Class对象，通过反射就可以创建，即可以做到按需加载扩展类，这点比Java SPI要强大。
+
+### 三、Dubbo IoC
+
+Dubbo SPI里面使用到了Dubbo IoC注入依赖，直接来看injectExtension方法：
+
+```java
+private T injectExtension(T instance) {
+    if (objectFactory == null) {
+        return instance;
+    }
+    
+    try {
+        // 遍历目标类的所有方法
+        for (Method method : instance.getClass().getMethods()) {
+            // 检测方法是否以 set 开头，且方法仅有一个参数，且方法访问级别为 public
+            // 注明：Dubbo IoC通过setter方法注入依赖
+            if (!isSetter(method)) {
+                continue;
+            }
+            // 如果目标类的方法使用了@DisableInject注解，则该方法不注入
+            if (method.getAnnotation(DisableInject.class) != null) {
+                continue;
+            }
+            // 获取setter方法的第一个参数：只注入第一个参数
+            Class<?> pt = method.getParameterTypes()[0];
+            // 如果该参数是基础数据类型（byte、short、int、long、float、double、boolen、char）：不注入依赖
+            if (ReflectUtils.isPrimitives(pt)) {
+                continue;
+            }
+
+            try {
+                // 获取需要注入的字段名
+                // 例如目标类依赖了 private FooObj fooObj;
+                // 则对应的setter方法为：setFooObj(FooObj fooObj)
+                // getSetterProperty(method) 最终返回 "fooObj"
+                String property = getSetterProperty(method);
+                // 从应用的上下文环境获取 FooObj 的实例：fooObj
+                Object object = objectFactory.getExtension(pt, property);
+                if (object != null) {
+                    // 通过反射调用setter方法，将 FooObj 的实例：fooObj 注入目标类，完成依赖注入
+                    method.invoke(instance, object);
+                }
+            } catch (Exception e) {
+                logger.error("Failed to inject via method " + method.getName()
+                        + " of interface " + type.getName() + ": " + e.getMessage(), e);
+            }
+
+        }
+    } catch (Exception e) {
+        logger.error(e.getMessage(), e);
+    }
+    return instance;
+}
+```
+
+这里来看看Dubbo IoC如何从应用的上下文环境获取 FooObj 的实例：fooObj
+
+```java
+// ExtensionLoader类的成员变量
+private final ExtensionFactory objectFactory;
+
+// ExtensionLoader类的私有构造函数
+private ExtensionLoader(Class<?> type) {
+    this.type = type;
+    // ExtensionFactory也是一个Dubbo SPI接口，也是通过SPI方式加载来的
+    objectFactory = (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
+}
+    
+// 这个就是从应用上下文环境获取到所依赖的类的实例
+Object object = objectFactory.getExtension(pt, property);
+```
+
+Dubbo 目前提供了两种 ExtensionFactory，分别是 SpiExtensionFactory 和 SpringExtensionFactory。前者用于创建自适应的拓展，后者是用于从 Spring 的 IOC 容器中获取所需的拓展。
+
+*本文所用到的测试代码已上传到GitHub：[java-spi-test](https://github.com/LUZHO211/java-spi-test)*
+
+<br /><br />
+
+*参考文章*
+
+*1. [Dubbo SPI](http://dubbo.apache.org/zh-cn/docs/source_code_guide/dubbo-spi.html)* <br />
+
+

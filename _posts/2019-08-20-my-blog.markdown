@@ -4,9 +4,10 @@ title: 关于我的博客网站
 subtitle: 我的博客网站搭建记录
 date: 2019-08-20 15:28:34.000000000 +08:00
 header-img: assets/images/tag-bg.jpg
-author: Luz.Ho211
+author: PandaQ
 tags: 
  - Blog
+ - 技术教程
 ---
 
 >这篇文章记录一下自己博客搭建的过程。
@@ -36,7 +37,6 @@ $ gem install bundler jekyll
 
 ```bash
 ··· ···
-
 Fetching: jekyll-sass-converter-2.0.0.gem (100%)
 ERROR:  Error installing jekyll:
 	jekyll-sass-converter requires Ruby version >= 2.4.0.
@@ -44,7 +44,7 @@ ERROR:  Error installing jekyll:
 
 嗯... 很明显，我电脑自带的Ruby版本没满足Jekyll要求的版本（`Ruby version >= 2.4.0`）。还能怎么办？那就来升级一下Ruby的版本呗：
 
->咱对Ruby也不在行，所以就搜索一下“如何升级Mac OS中的Ruby版本”。参考了这篇文章：[Mac OS升级Ruby](https://www.jianshu.com/p/a575aff064e3) 把Ruby升级到了2.6.3版本。这篇文章中介绍的升级方法，核心就是使用Ruby的第三方版本管理工具[RVM](http://rvm.io/)来完成。
+>参考了这篇文章：「[Mac OS升级Ruby](https://www.jianshu.com/p/a575aff064e3)」把Ruby升级到了2.6.3版本。这篇文章中介绍的升级方法，核心就是使用Ruby的第三方版本管理工具[RVM](http://rvm.io/)来完成。
 
 那么就先来安装RVM（官网也有介绍[如何安装RVM](http://rvm.io/)）：
 
@@ -65,7 +65,7 @@ $ rvm -v
 rvm 1.29.9 (latest) by Michal Papis, Piotr Kuczynski, Wayne E. Seguin [https://rvm.io]
 ```
 
-好了，RVM安装完毕。我们来升级Ruby的版本，从Ruby官网了解到最新的稳定版本是`2.6.3`：
+好了，RVM安装完毕。我们来升级Ruby的版本，从Ruby官网了解到当前最新版本是`2.6.3`：
 ```bash
 $ rvm install 2.6.3
 ... ...
@@ -81,7 +81,7 @@ $ ruby -v
 ruby 2.6.3p62 (2019-04-16 revision 67580) [x86_64-darwin18]
 ```
 
-没错了，接下来继续安装我们的Jekyll，直接使用下面的指令一键安装：
+没错了，接下来继续安装我们的Jekyll，直接执行下面的指令进行安装：
                            
 ```bash
 $ gem install bundler jekyll
@@ -111,9 +111,11 @@ layout: post
 title: 关于我的博客网站
 subtitle: 我的博客网站搭建记录
 date: 2019-08-20 15:28:34.000000000 +08:00
-author: Luz.Ho211
+header-img: assets/images/tag-bg.jpg
+author: PandaQ
 tags: 
  - Blog
+ - 技术教程
 ---
 
 >这篇文章记录一下自己博客搭建的过程。
@@ -164,10 +166,12 @@ Configuration file: /root/my_blog_site/_config.yml
 
 ### 三、将Jekyll博客以静态资源方式部署
 
-如果博客文章写好了，想将博客文章打包成静态资源结合Web服务器（例如`Nginx`）进行部署，可以进入博客代码根目录执行如下指令，将文章打包成静态资源：
+如果博客文章写好了，想将博客文章打包成静态资源结合Web服务器进行发布，例如使用`Nginx`或者`Github Pages`进行部署。
+
+- 进入博客代码根目录执行下面的指令，将博客打包成静态资源：
 
 ```bash
 $ bundle install && jekyll build
 ```
 
-成功运行完毕后，会在根目录下生成`_site`文件夹，这个文件夹里面就是我们要部署的博客文章静态资源。直接将这个文件夹拷贝到`Nginx`的静态资源部署目录下，即可完成部署。
+运行完毕后，会在根目录下生成`_site`文件夹，这个文件夹就是我们的博客文章静态资源。直接将这个文件夹下的全部内容拷贝到`Nginx`的静态资源部署目录下，即可完成部署。或者你使用的是`Github Pages`，参考官网的教程：[Github Pages](https://pages.github.com)。
