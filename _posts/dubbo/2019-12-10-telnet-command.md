@@ -2,6 +2,8 @@
 layout: post
 title: 使用telnet命令来进行Dubbo接口测试
 date: 2019-12-10 23:29:00.000000000 +08:00
+header-img: assets/images/tag-bg.jpg
+author: PandaQ
 tags: Dubbo
 ---
 

@@ -2,6 +2,8 @@
 layout: post
 title: 记一次Spring RedisTemplate序列化乱码问题的排查过程
 date: 2020-03-14 16:00:00.000000000 +08:00
+header-img: assets/images/tag-bg.jpg
+author: PandaQ
 tags: SpringBoot
 ---
 

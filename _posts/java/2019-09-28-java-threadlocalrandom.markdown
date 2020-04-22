@@ -2,6 +2,8 @@
 layout: post
 title: Java ThreadLocalRandom
 date: 2019-09-28 10:10:48.000000000 +08:00
+header-img: assets/images/tag-bg.jpg
+author: PandaQ
 tags: Java
 ---
 

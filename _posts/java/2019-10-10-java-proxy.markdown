@@ -2,6 +2,8 @@
 layout: post
 title: JDK静态代理和动态代理
 date: 2019-10-10 23:36:15.000000000 +08:00
+header-img: assets/images/tag-bg.jpg
+author: PandaQ
 tags: Java
 ---
 

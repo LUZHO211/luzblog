@@ -2,6 +2,8 @@
 layout: post
 title: Java的equals和hashCode方法
 date: 2019-08-26 23:36:15.000000000 +08:00
+header-img: assets/images/tag-bg.jpg
+author: PandaQ
 tags: Java
 ---
 

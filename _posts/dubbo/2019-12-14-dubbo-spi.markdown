@@ -2,10 +2,12 @@
 layout: post
 title: Dubbo SPI机制
 date: 2019-12-14 20:52:22.000000000 +08:00
+header-img: assets/images/tag-bg.jpg
+author: PandaQ
 tags: Dubbo
 ---
 
->关于Java SPI机制，之前写过一篇：[Java SPI机制](/2019/10/java-spi)，后来了解到Dubbo也实现了一套SPI机制，而不是直接使用Java的SPI。学习了[Dubbo SPI源码](http://dubbo.apache.org/zh-cn/docs/source_code_guide/dubbo-spi.html)之后，写下这篇文章，很多东西直接借鉴原文，但是目的为了巩固所学，加深理解。
+>关于Java SPI机制，之前写过一篇：<a href="/2019/10/12/java-spi" target="_blank">Java SPI机制</a>，后来了解到Dubbo也实现了一套SPI机制，而不是直接使用Java的SPI。学习了[Dubbo SPI源码](http://dubbo.apache.org/zh-cn/docs/source_code_guide/dubbo-spi.html)之后，写下这篇文章，很多东西直接借鉴原文，但是目的为了巩固所学，加深理解。
 
 ### 一、Dubbo SPI的使用
 

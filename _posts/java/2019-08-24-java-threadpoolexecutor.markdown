@@ -2,6 +2,8 @@
 layout: post
 title: Java线程池的使用
 date: 2019-08-24 12:41:45.000000000 +08:00
+header-img: assets/images/tag-bg.jpg
+author: PandaQ
 tags: Java
 ---
 

@@ -2,6 +2,8 @@
 layout: post
 title: Java开发环境搭建
 date: 2019-08-23 10:28:34.000000000 +08:00
+header-img: assets/images/tag-bg.jpg
+author: PandaQ
 tags: Java
 ---
 

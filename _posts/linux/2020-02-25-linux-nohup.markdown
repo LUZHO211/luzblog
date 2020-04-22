@@ -2,6 +2,8 @@
 layout: post
 title: Linux技巧：让进程在后台运行更可靠的几种方法
 date: 2020-02-25 09:00:00.000000000 +08:00
+header-img: assets/images/tag-bg.jpg
+author: PandaQ
 tags: Linux
 ---
 

@@ -2,6 +2,8 @@
 layout: post
 title: Dubbo telnet：invoke缺少fastjson惹的祸
 date: 2019-12-14 14:52:22.000000000 +08:00
+header-img: assets/images/tag-bg.jpg
+author: PandaQ
 tags: Dubbo
 ---
 
@@ -33,7 +35,6 @@ public class InvokeTelnetHandler implements TelnetHandler {
     // 忽略下面的其他方法 ...
     
 }
-
 ```
 
 发现里面在解析invoke命令参数的时候，使用了 fastjson 的 JSON.parseArray 方法。由于项目中没有引入 fastjson 的依赖，所以 Dubbo telnet 在解析参数的时候抛出了异常。
