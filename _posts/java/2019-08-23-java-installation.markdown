@@ -7,24 +7,25 @@ author: PandaQ
 tags: Java
 ---
 
-本文主要记录JDK安装以及JDK环境变量配置的问题。
+本文记录JDK安装以及环境变量的配置。更换电脑之后可以直接参考这个来配置，省时省力。
 
 ### 一、Windows系统安装JDK
 
 *本文使用Windows 10系统版本来做演示；JDK版本为 1.8.0_221。*
 
-#### 下载并安装JDK
+（1）下载并安装JDK
+
 - 到[Oracle官网](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)下载适合自己系统的JDK版本，本文使用`jdk-8u221-windows-x64.exe`版本；
 - 双击 `exe` 文件安装，并记录安装的目录，例如：`D:\Program files\Java\jdk1.8.0_221`。
 
-#### 配置Java环境变量
+（2）配置Java环境变量
 
 
 ### 二、Linux系统安装JDK
 
 *本文使用Ubuntu 16.04.6 LTS系统版本来做演示；JDK版本为 1.8.0_221。*
 
-#### 下载并解压（安装）JDK
+（1）下载并解压（安装）JDK
 
 - 到[Oracle官网](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)下载适合自己系统的JDK版本，本文使用`jdk-8u221-linux-x64.tar.gz`版本；
 - 将下载的文件放到某个目录下，例如：`/usr/local`
@@ -33,15 +34,15 @@ tags: Java
 $ mv jdk-8u221-linux-x64.tar.gz /usr/local/
 ```
 
-- 进入JDK压缩文件所在目录并解压文件（**解压完毕即安装成功**），将得到`jdk1.8.0_221`文件夹：
+- 解压文件，将得到`jdk1.8.0_221`文件夹：
 
 ```bash
-$ tar -zxvf jdk-8u221-linux-x64.tar.gz
+$ cd /usr/local/ && tar -zxvf jdk-8u221-linux-x64.tar.gz
 ```
 
 **即，JDK的安装路径为：`/usr/local/jdk1.8.0_221`，后面环境变量`JAVA_HOME`就是设置成JDK的安装路径。**
 
-#### 配置Java环境变量
+（2）配置Java环境变量
 
 - 在用户主目录下编辑`.bashrc`文件（`vim ~/.bashrc`），在文件尾部追加以下内容：
 
@@ -66,11 +67,12 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.221-b11, mixed mode)
 
 *本文使用macOS Mojave 10.14.6系统版本来做演示；JDK版本为 1.8.0_221。*
 
-#### 下载并安装JDK
+（1）下载并安装JDK
+
 - 到[Oracle官网](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)下载适合自己系统的JDK版本，本文使用`jdk-8u221-macosx-x64.dmg`版本。
 - 下载完毕后，双击`jdk-8u221-macosx-x64.dmg`文件，按照引导一路点击下去即可完成安装。
 
-#### 配置Java环境变量
+（2）配置Java环境变量
 
 - 打开终端，执行`/usr/libexec/java_home -V`指令来查看JDK的安装路径：
 
