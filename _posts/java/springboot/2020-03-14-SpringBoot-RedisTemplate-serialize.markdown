@@ -75,7 +75,7 @@ int limit = 10;
 Object result = redisTemplate.execute(redisScript, Collections.singletonList(key), limit);
 ```
 
-于是想到在Lua脚本中增加日志输出，观察一下我传入的limit参数在进入Lua脚本之后是什么东西：
+于是想到在Lua脚本中增加日志输出，观察一下Redis服务器收到的limit参数到底是什么样的：
 
 ```lua
 local key = KEYS[1]
