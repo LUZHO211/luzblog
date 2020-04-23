@@ -108,8 +108,6 @@ Redis服务器输出的日志如下：
 
 这是因为RedisTemplate默认使用的是JDK序列化，反序列化也只能使用JDK反序列化。所以Redis服务器并不能正确地反序列化Key和args参数，导致反序列化的结果为乱码。
 
-这有点坑啊，为什么默认使用JDK序列化，明知JDK序列化之后Redis服务器是不能正确反序列化的😓。
-
 所以我们需要为RedisTemplate设置其他通用的序列化方式。
 
 或者直接使用StringRedisTemplate来替代RedisTemplate，完美避开JDK序列化。

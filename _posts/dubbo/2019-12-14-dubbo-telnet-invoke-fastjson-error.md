@@ -9,7 +9,7 @@ tags: Dubbo
 
 >在使用 Dubbo 的telnet invoke命令测试 Dubbo 接口时，telnet控制台返回了一个错误：`Invalid json argument, cause: com/alibaba/fastjson/JSON`。
 
-从错误信息看，好像跟 fastjson 有点关系。于是就看了一下 Dubbo 处理 invoke 命令的处理器Handler代码来看看：
+从错误信息看，好像跟 fastjson 有点关系。于是就看了一下 Dubbo 处理 invoke 命令的处理器Handler源码：
 
 ```java
 package org.apache.dubbo.rpc.protocol.dubbo.telnet;
@@ -39,7 +39,7 @@ public class InvokeTelnetHandler implements TelnetHandler {
 
 发现里面在解析invoke命令参数的时候，使用了 fastjson 的 JSON.parseArray 方法。由于项目中没有引入 fastjson 的依赖，所以 Dubbo telnet 在解析参数的时候抛出了异常。
 
-为证实这点，启动单点调试。如下图，从详细的异常信息来看，确实是缺少了 fastjson 的依赖导致的异常：
+为证实这点，启动单点调试。如下图，从异常信息来看，确实是缺少了 fastjson 的依赖导致的异常：
 
 ![](/assets/images/2019-12/telnet-invoke-fastjson-error.png)
 
