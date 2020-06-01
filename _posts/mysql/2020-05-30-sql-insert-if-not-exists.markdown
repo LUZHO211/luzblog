@@ -9,7 +9,9 @@ tags:
  - MySQL
 ---
 
-开发中经常会一次性往一个里INSERT多条数据，但是当某条INSERT SQL因为与表中发生**主键冲突**，或者与某个定义为`UNIQUE KEY`的字段发生`Duplicate entry`错误时，MySQL会放弃执行后续的INSERT SQL。**本文主要是讨论批量执行INSERT SQL时，如何忽略MySQL的唯一性约束错误，而不影响后续INSERT SQL的执行。**
+开发中经常会一次性往一个里INSERT多条数据，但是当某条INSERT SQL因为与表中发生**主键冲突**，或者与某个定义为`UNIQUE KEY`的字段发生`Duplicate entry`错误时，MySQL会放弃执行后续的INSERT SQL。而我们希望如果某条INSERT发生了唯一性约束的错误，那么这条INSERT不插入数据即可，不要影响后面的其他INSERT语句的执行。
+
+**本文主要是讨论批量执行INSERT SQL时，如何忽略MySQL的唯一性约束错误，而不影响后续INSERT SQL的执行。**
 
 有张表的结构如下所示：
 
@@ -57,6 +59,8 @@ INSERT INTO my_user (nickname, mobile, email, address, age) VALUES ('wangwu', '1
 如何做到`insert if not exists`效果呢？即，如果表中存在了该用户，那么该条数据就不插入，否则就插入。这里记录两种实现方式。
 
 - 使用`INSERT IGNORE INTO`来完成
+
+>`IGNORE`子句是MySQL对SQL标准的扩展。
 
 ```sql
 INSERT IGNORE INTO my_user (nickname, mobile, email, address, age) VALUES ('zhangsan', '17777778901', 'zhangsan@foxmail.com', 'Beijing', 18);
