@@ -1,7 +1,7 @@
 ---
 layout: post
 title: MySQL INSERT IGNORE INTO
-subtitle: 如何做到insert if not exists？
+subtitle: 如何忽略INSERT SQL发生的唯一性约束错误？
 date: 2020-05-30 11:44:51.000000000 +08:00
 header-img: assets/images/tag-bg.jpg
 author: PandaQ
@@ -9,10 +9,13 @@ tags:
  - MySQL
 ---
 
+### 一、前言
+
 开发中经常会一次性往一个里INSERT多条数据，但是当某条INSERT SQL因为与表中发生**主键冲突**，或者与某个定义为`UNIQUE KEY`的字段发生`Duplicate entry`错误时，MySQL会放弃执行后续的INSERT SQL。而我们希望如果某条INSERT发生了唯一性约束的错误，那么这条INSERT不插入数据即可，不要影响后面的其他INSERT语句的执行。
 
 **本文主要是讨论批量执行INSERT SQL时，如何忽略MySQL的唯一性约束错误，而不影响后续INSERT SQL的执行。**
 
+### 二、需求描述
 有张表的结构如下所示：
 
 ```sql
@@ -54,11 +57,9 @@ INSERT INTO my_user (nickname, mobile, email, address, age) VALUES ('wangwu', '1
 
 >ERROR 1062 (23000): Duplicate entry 'zhangsan' for key 'uk_username'
 
-以上两种出现唯一性约束错误之后，MySQL就不会执行后续的INSERT SQL，例如上面的`wangwu`就不会被执行。
+以上两种出现唯一性约束错误之后，MySQL就不会执行后续的INSERT SQL，例如上面的`wangwu`就不会被执行。在批量执行INSERT SQL时，如何忽略某些INSERT操作发生的唯一性约束异常，而不影响后续的INSERT SQL的执行呢？这里记录两种实现方式。
 
-如何做到`insert if not exists`效果呢？即，如果表中存在了该用户，那么该条数据就不插入，否则就插入。这里记录两种实现方式。
-
-- 使用`INSERT IGNORE INTO`来完成
+### 三、使用`INSERT IGNORE INTO`
 
 >`IGNORE`子句是MySQL对SQL标准的扩展。
 
@@ -70,7 +71,7 @@ INSERT IGNORE INTO my_user (nickname, mobile, email, address, age) VALUES ('wang
 
 已知nickname字段上有唯一索引约束，现在每条INSERT SQL都加上了`IGNORE`，如果用户昵称已经存在，就不执行插入；否则执行插入。这样就不会影响后续的INSERT SQL的执行。
 
-- 使用`INSERT INTO ... ON DUPLICATE KEY UPDATE`来完成
+### 四、使用`INSERT INTO ... ON DUPLICATE KEY UPDATE`
 
 ```sql
 INSERT INTO my_user (nickname, mobile, email, address, age) VALUES ('zhangsan', '17777778901', 'zhangsan@foxmail.com', 'Beijing', 18) ON DUPLICATE KEY UPDATE age = age;
@@ -78,5 +79,5 @@ INSERT INTO my_user (nickname, mobile, email, address, age) VALUES ('zhangsan', 
 INSERT INTO my_user (nickname, mobile, email, address, age) VALUES ('wangwu', '155784983939', 'wangwu@foxmail.com', 'Guangxi', 20) ON DUPLICATE KEY UPDATE age = age;
 ```
 
-`INSERT INTO ... ON DUPLICATE KEY UPDATE`的效果就是，如果存在则不插入，而是执行一个更新操作；如果不存在则执行插入。
+`INSERT INTO ... ON DUPLICATE KEY UPDATE`作用是，若INSERT发生了唯一性约束错误，那么就执行该条记录的更新操作；若没有发生唯一性约束错误，说明记录还未存在，直接执行插入操作。
 
