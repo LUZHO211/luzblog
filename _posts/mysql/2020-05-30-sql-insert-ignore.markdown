@@ -28,7 +28,7 @@ CREATE TABLE `my_user` (
   `age` tinyint(3) unsigned DEFAULT NULL COMMENT '用户年龄',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_nickname` (`nickname`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
 ```
 
 >id字段为主键；在nickname字段处创建了唯一索引。
