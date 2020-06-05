@@ -8,7 +8,7 @@ author: PandaQ
 tags: Redis
 ---
 
-Redis虽然是内存数据库，但是为了一定程度的数据可靠性也做了一些持久化的方案，确保机器宕机或者断电重启之后，能从备份数据中恢复宕机、掉电前的数据。
+Redis虽然是内存数据库，但是为了一定程度的数据可靠性也做了一些持久化的方案，确保Redis机器宕机或者断电重启之后，能从备份数据中恢复宕机、掉电前的数据。
 
 Redis目前有两种持久化方案：RDB持久化和AOF持久化。
 
@@ -16,11 +16,11 @@ Redis目前有两种持久化方案：RDB持久化和AOF持久化。
 
 RDB全称是Redis DataBase。是Redis最早支持的一种持久化方式，也是Redis默认的持久化方案。
 
-RDB持久化是一种生成「快照」数据的方式，它会根据配置文件（`redis.conf`）中的持久化策略在合适的时机自动去dump整个Redis服务器在「某个时刻」的中的全量内存数据，即某个时刻的快照数据。并将快照数据保存在一个名叫`dump.rdb`的文件中，这些快照数据以二进制格式存储。
+RDB持久化是一种生成「快照」数据的方式，它会根据配置文件（`redis.conf`）中的持久化策略在合适的时机自动去dump整个Redis服务器在「某个时刻」的中的全量内存数据，即某个时刻的快照数据。并将快照数据保存在一个名叫`dump.rdb`的文件中，这些快照数据以二进制格式压缩存储。
 
 ##### 1.1 RDB持久化策略配置
 
-我们可以在Redis服务器的配置文件中配置RDB持久化策略，如下所示：
+我们可以在Redis服务器的配置文件中以`save`指令配置RDB持久化策略，如下所示：
 
 ```text
 # redis.conf
@@ -65,11 +65,11 @@ RDB持久化方式关注点在于**快照数据**，每次触发RDB持久化都�
 
 RDB持久化也有缺点：
 
-- 没法做到实时/秒级持久化，因为每次RDB持久化都会fork一个子进程来生成快照数据，fork属于重量级操作，频繁fork会让cpu和内存吃不消。
+- 没法做到实时/秒级持久化，因为每次RDB持久化都会fork一个子进程来生成快照数据，fork属于重量级操作，频繁fork会让cpu和内存吃不消，影响Redis性能。
 
 ### 2. Redis AOF持久化
 
-Redis `v1.1`开始支持另一种持久化方式：AOF（`Append-only File`）。相比RDB持久化记录物理格式的数据，AOF文件记录的不是物理数据，而是记录Redis中的每条**写命令**，例如`SET`，`DEL`等。每当有写操作发生，这个写操作的命令会被追加到AOF文件中：`appendonly.aof`。
+Redis `v1.1`开始支持另一种持久化方式：AOF（`Append-only File`）。相比RDB持久化记录物理数据的方式，AOF文件记录的不是物理数据，而是记录Redis中的每条**写命令**，例如`SET`，`DEL`等。每当有写操作发生，这个写操作的命令会被追加到AOF文件中：`appendonly.aof`。
 
 我们可以这么理解：RDB记录的是物理日志，AOF记录的是逻辑日志，是一条条Redis写操作命令。
 
@@ -82,7 +82,7 @@ Redis默认不开启AOF持久化，我们需要在`redis.conf`配置文件中配
 ```text
 # redis.conf
 appendonly yes        # yes表示开启AOF持久化；no表示关闭AOF持久化
-appendfsync everysec  # AOF之久化策略：no、always、everysec
+appendfsync everysec  # AOF持久化策略：no、always、everysec
 ```
 
 `appendfsync`参数对Redis的性能有着重要的影响：
@@ -93,7 +93,7 @@ appendfsync everysec  # AOF之久化策略：no、always、everysec
 
 ##### 2.2 AOF数据的加载恢复
 
-如果同时开启RDB和AOF持久化，即数据目录中同时存在`dump.rdb`和`appendonly.aof`文件，Redis在启动的时候会优先使用`appendonly.aof`来恢复数据，因为AOF文件中恢复的数据集会最完整也最新。同样，在启动日志中体现了AOF文件的加载：
+如果同时开启RDB和AOF持久化，即数据目录中会同时存在`dump.rdb`和`appendonly.aof`文件，Redis在启动的时候会优先使用`appendonly.aof`来恢复数据，因为从AOF文件中恢复的数据集是最完整也是最新的。同样，在启动日志中体现了AOF文件的加载：
 
 ![aof-load.png](/assets/images/2020-06/aof-load.png)
 
@@ -211,7 +211,7 @@ auto-aof-rewrite-min-size 64mb
 
 Redis在运行过程中可能会遇到突发的宕机、停电，如果这时候正在写AOF文件，就有可能没写完成，发生文件损坏（corrupt）。Redis在重启之后，发现AOF文件损坏会拒绝加载这个AOF文件。这个时候可以这样做：
 
-- 为现有的AOF文件创建一个备份，备份很重要；
+- 先为现有的AOF文件创建一个备份，备份很重要；
 - 使用Redis自带的程序工具`redis-check-aof`对损坏的AOF文件进行修复：`redis-check-aof --fix appendonly.aof`；
 - （可选）使用`diff -u`对比修复后的文件和原始文件的备份，查看两个文件之间的不同之处；
 - 重启Redis，等待Redis重新加载AOF文件进行数据恢复。
@@ -230,4 +230,6 @@ AOF持久化优点：
 
 ### 3. 写在最后
 
-Redis的两种持久化方式个有特色，一般不会只用其中一种，而是同时使用两种持久化。RDB用来结合定时任务去定期生成备份数据，用于灾难恢复；AOF因为支持实时持久化，它记录的数据集是最实时的，所以也会优先使用AOF进行数据恢复。但是AOF也可能会损坏无法修复，所以两种方式并用对数据才是最安全的。
+Redis的两种持久化方式各有特色，我们生产环境一般不会只用其中一种，而是同时使用两种。
+
+例如RDB可以结合`cron`定时任务去定期生成备份数据，用于灾难恢复；同时，AOF因为支持实时持久化，它记录的数据集是最实时的，所以我们也会同时开启AOF持久化，应对一些对数据实时完整性要求较高的场景。但是AOF也可能会损坏无法修复，所以两种方式并用对数据才是最安全的。
