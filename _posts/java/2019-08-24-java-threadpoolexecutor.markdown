@@ -169,13 +169,13 @@ submit的其他两个方法也差不多类似，这里就不详细展开了。�
 
 ![futuretask-run.png](/assets/images/2020-06/futuretask-run.png)
 
-submit提交任务后，若任务执行时发生异常，异常不会直接抛出来，而是会被FutureTask封装到一个名叫`outcome`变量中，等到调用`future.get`的时候异常才会抛出来，这点在使用的时候要注意。
+submit提交任务后，若任务执行时发生异常，异常不会直接抛出来，而是会被FutureTask封装到一个名叫`outcome`变量中，等到调用`Future.get`的时候异常才会抛出来，这点在使用的时候要注意。
 
 ![future-get.png](/assets/images/2020-06/future-get.png)
 
 submit在线程任务异常的处理方式上与execute区别很大：execute的异常只能由线程池中执行该任务的线程自己消化掉，例如`try-catch`掉，在其他地方（例如调用者线程）企图`try-catch`任务的异常，是没法做到的。对于execute方式，想要在其他地方捕获任务执行时抛出的异常，似乎只能通过为线程设置`Thread.UncaughtExceptionHandler`来完成。
 
-submit则是先将异常封装起来，不会立即抛出。直到调用`future.get`的时候才会将异常抛出，即我们能从其他地方捕获到任务的异常。在使用的时候需要注意，因为有时候只是想向线程池中提交任务，而不会调用`future.get`获取结果（因为不关心结果）。如果发生异常，FutureTask会「吞掉」我们的异常，我们在日志中根本看不到任何异常信息，这会对我们的问题排查带来很大问题。
+submit则是先将异常封装起来，不会立即抛出。直到调用`Future.get`的时候才会将异常抛出，即我们能从其他地方捕获到任务的异常。在使用的时候需要注意，因为有时候只是想向线程池中提交任务，而不会调用`Future.get`获取结果（因为不关心结果）。如果发生异常，FutureTask会「吞掉」我们的异常，我们在日志中根本看不到任何异常信息，这会对我们的问题排查带来很大问题。
 
 ##### 5.3 选择execute还是submit？
 
@@ -185,14 +185,14 @@ submit则是先将异常封装起来，不会立即抛出。直到调用`future.
 
 ### 6. 线程池工具类（Executors）
 
-JDK提供了java.util.concurrent.Executors这个工具类来帮助我们快速创建线程池。
+JDK提供了`java.util.concurrent.Executors`这个工具类来帮助我们快速创建线程池。
 
 - `newFixedThreadPool(int nThreads)`：创建一个固定数量线程的线程池，池中的线程数量达到最大值后会始终保持不变。
 - `newSingleThreadExecutor()`：创建一个只包含单个线程的线程池，可以保证所有任务按提交的顺序被单一的一个线程串行地执行。
 - `newCachedThreadPool()`：创建一个会根据任务按需地创建、回收线程的线程池。这种类型线程池适合执行数量多、耗时少的任务。
 - `newScheduledThreadPool(int corePoolSize)`：创建一个具有定时功能的线程池，适用于执行定时任务。
 
-这些线程池本质上也是对ThreadPoolExecutor进行封装，所以想要理解他们，我们还是必须要了解ThreadPoolExecutor。
+这些线程池工具类其实也是对ThreadPoolExecutor进行封装，所以想要理解这些线程池工具，我们还是必须要掌握ThreadPoolExecutor的原理。
 
 ```java
 // newFixedThreadPool
