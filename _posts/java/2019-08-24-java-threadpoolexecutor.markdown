@@ -39,11 +39,11 @@ public ThreadPoolExecutor(int corePoolSize,
 |:---|:---|
 |corePoolSize|线程池的核心线程数，一旦创建就会一直保留在线程池中（除非调用`allowCoreThreadTimeOut(true)`方法将`allowCoreThreadTimeOut`参数设置成`true`）|
 |maximumPoolSize|线程池中允许存活的最大线程数|
-|keepAliveTime|当创建的线程数量**超过了核心线程数**，允许线程池中处于空闲状态的**非核心线程**的存活时间（若设置了allowCoreThreadTimeOut参数为true，核心线程也会被回收）|
+|keepAliveTime|当创建的线程数量超过了核心线程数，允许线程池中处于空闲状态的非核心线程的存活时间（若设置`allowCoreThreadTimeOut`参数为`true`，空闲超时的核心线程也会被回收）|
 |unit|keepAliveTime参数的时间单位，例如`TimeUnit.MILLISECONDS`|
 |workQueue|工作队列（阻塞队列），用于存放将被执行的线程任务（Runnable tasks）|
 |threadFactory|创建线程的工厂，可以用于标记区分不同线程池所创建出来的线程|
-|handler|拒绝策略handler。当线程池中线程数量和工作队列的容量**均达到上限**，继续向线程池提交任务时所触发的拒绝策略逻辑handler|
+|handler|拒绝策略handler。当线程池中线程数量和工作队列的容量均达到上限，继续向线程池提交任务时所触发的拒绝策略逻辑handler|
 
 ### 1. 线程池大小与线程存活时间
 
@@ -179,9 +179,9 @@ submit则是先将异常封装起来，不会立即抛出。直到调用`Future.
 
 ##### 5.3 选择execute还是submit？
 
-上一节其实已经对比了execute和submit方法，一般来说，如果如果不关心任务执行结果，那么直接用execute方法即可；如果关心结果，可以使用`submit + Future.get`组合来拿到任务执行结果。
+通常情况下，如果如果不关心任务执行结果，那么直接用execute方法即可；如果关心结果，可以使用`submit + Future.get`组合来拿到任务执行结果。
 
-另外，execute和submit方法在任务发生异常时候的处理方式也有所不同，execute提交的任务在执行时如果发生异常，会被执行该任务的线程消化掉（要么线程自己`try-catch`掉，要么线程没处理，线程终止），外部其他地方无法捕获，除非设置了`Thread.UncaughtExceptionHandler`；submit方法提交的任务在执行时发生异常，会被FutureTask「吞掉」，然后在用户调用`Future.get`时将异常抛出。
+另外，execute和submit方法对异常的处理方式也不同，execute提交的任务在执行时如果发生异常，会被执行该任务的线程消化掉（要么线程自己`try-catch`掉，要么线程没处理，线程终止），外部其他地方无法捕获，除非设置了`Thread.UncaughtExceptionHandler`；submit方法提交的任务在执行时发生的异常，会被FutureTask「吞掉」，然后在用户调用`Future.get`时将异常抛出。
 
 ### 6. 线程池工具类（Executors）
 
@@ -214,5 +214,5 @@ public ScheduledThreadPoolExecutor(int corePoolSize) {
 
 以上四种定义好的线程池确实很方便我们的使用，但是我们需要了解它们的隐患之处：
 
-- `FixedThreadPool`、`SingleThreadPool`的工作队列最大容量为`Integer.MAX_VALUE`，这有可能会随着工作队列中的任务堆积而导致OOM；
-- `CachedThreadPool`、`ScheduledThreadPool`所允许创建的线程数量为`Integer.MAX_VALUE`，这也有可能因为创建大量线程导致OOM或者线程切换开销巨大。
+- `FixedThreadPool`、`SingleThreadPool`的工作队列最大容量为`Integer.MAX_VALUE`，这有可能会随着工作队列中的任务堆积而导致`OOM`；
+- `CachedThreadPool`、`ScheduledThreadPool`允许最大线程数为`Integer.MAX_VALUE`，这也有可能因为创建大量线程导致`OOM`或者线程切换开销巨大。
