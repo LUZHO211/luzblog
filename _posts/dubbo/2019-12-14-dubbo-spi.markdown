@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Dubbo SPI机制
+subtitle: 我也来了解一下Dubbo的SPI机制
 date: 2019-12-14 20:52:22.000000000 +08:00
 header-img: assets/images/tag-bg.jpg
 author: PandaQ

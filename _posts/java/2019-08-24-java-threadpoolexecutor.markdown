@@ -5,7 +5,9 @@ subtitle: Java ThreadPoolExecutor
 date: 2019-08-24 12:41:45.000000000 +08:00
 header-img: assets/images/tag-bg.jpg
 author: PandaQ
-tags: Java
+tags: 
+ - Java 
+ - Java多线程
 ---
 
 先贴出使用`ThreadPoolExecutor`来创建线程池的核心构造函数：

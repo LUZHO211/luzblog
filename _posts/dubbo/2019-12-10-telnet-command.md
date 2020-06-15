@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 使用telnet命令来进行Dubbo接口测试
+subtitle: 如何使用telnet调试Dubbo接口，学习一下
 date: 2019-12-10 23:29:00.000000000 +08:00
 header-img: assets/images/tag-bg.jpg
 author: PandaQ
@@ -9,7 +10,7 @@ tags: Dubbo
 
 >从 `2.0.5` 版本开始，Dubbo 开始支持通过 telnet 命令来进行服务治理。
 
-使用 telnet 命令来直接连接到 Dubbo 的服务提供者，从而直接在命令行控制台使用 Dubbo 提供的指令来进行服务治理，例如调用 Dubbo 接口、查看服务者状态以及服务者提供的接口等信息。
+使用telnet命令来直接连接到Dubbo的服务提供者，从而直接在命令行控制台使用 Dubbo 提供的指令来进行服务治理，例如调用 Dubbo 接口、查看服务者状态以及服务者提供的接口等信息。
 
 ```bash
 $ telnet localhost 20880
@@ -20,9 +21,9 @@ Escape character is '^]'.
 dubbo>
 ```
 
-telnet连接上 Dubbo 服务提供者之后，可以通过 Dubbo 内建的telnet命令来跟 Dubbo 服务提供者交互。
+telnet连接上Dubbo服务提供者后，可以通过Dubbo内建的telnet命令来跟Dubbo服务提供者交互。
 
-### 一、`ls` 命令
+### 1. `ls` 命令
 
 - `ls` —— 列出 Dubbo 服务提供者提供的接口列表；
 - `ls -l` —— 列出 Dubbo 服务提供者提供的接口详细信息列表；
@@ -33,24 +34,24 @@ telnet连接上 Dubbo 服务提供者之后，可以通过 Dubbo 内建的telnet
 
 ```bash
 dubbo>ls
-com.luzho211.endurance.dubbo.ComputerService
-com.luzho211.endurance.dubbo.CameraService
-com.luzho211.endurance.dubbo.PrinterService
+com.pandaq.dubbo.ComputerService
+com.pandaq.dubbo.CameraService
+com.pandaq.dubbo.PrinterService
 ```
 
 `ls -l` 查看接口详细信息
 
 ```bash
 dubbo>ls -l
-com.luzho211.endurance.dubbo.ComputerService -> dubbo://192.168.1.101:20880/com.luzho211.endurance.dubbo.ComputerService?anyhost=true&application=dubbo-telnet-service&bind.ip=192.168.1.101&bind.port=20880&dubbo=2.6.2&generic=false&interface=com.luzho211.endurance.dubbo.ComputerService&methods=getComputerType,restart&pid=33024&side=provider&timestamp=1576075027350
-com.luzho211.endurance.dubbo.CameraService -> dubbo://192.168.1.101:20880/com.luzho211.endurance.dubbo.CameraService?anyhost=true&application=dubbo-telnet-service&bind.ip=192.168.1.101&bind.port=20880&dubbo=2.6.2&generic=false&interface=com.luzho211.endurance.dubbo.CameraService&methods=getCameraVendorName,getCameraColor&pid=33024&side=provider&timestamp=1576075022280
-com.luzho211.endurance.dubbo.PrinterService -> dubbo://192.168.1.101:20880/com.luzho211.endurance.dubbo.PrinterService?anyhost=true&application=dubbo-telnet-service&bind.ip=192.168.1.101&bind.port=20880&dubbo=2.6.2&generic=false&interface=com.luzho211.endurance.dubbo.PrinterService&methods=getPrinterVendorName,printText&pid=33024&side=provider&timestamp=1576075006858
+com.pandaq.dubbo.ComputerService -> dubbo://192.168.1.101:20880/com.pandaq.dubbo.ComputerService?anyhost=true&application=dubbo-telnet-service&bind.ip=192.168.1.101&bind.port=20880&dubbo=2.6.2&generic=false&interface=com.pandaq.dubbo.ComputerService&methods=getComputerType,restart&pid=33024&side=provider&timestamp=1576075027350
+com.pandaq.dubbo.CameraService -> dubbo://192.168.1.101:20880/com.pandaq.dubbo.CameraService?anyhost=true&application=dubbo-telnet-service&bind.ip=192.168.1.101&bind.port=20880&dubbo=2.6.2&generic=false&interface=com.pandaq.dubbo.CameraService&methods=getCameraVendorName,getCameraColor&pid=33024&side=provider&timestamp=1576075022280
+com.pandaq.dubbo.PrinterService -> dubbo://192.168.1.101:20880/com.pandaq.dubbo.PrinterService?anyhost=true&application=dubbo-telnet-service&bind.ip=192.168.1.101&bind.port=20880&dubbo=2.6.2&generic=false&interface=com.pandaq.dubbo.PrinterService&methods=getPrinterVendorName,printText&pid=33024&side=provider&timestamp=1576075006858
 ```
 
 `ls xxxService` 查看某个 Dubbo 接口提供的方法
 
 ```bash
-dubbo>ls com.luzho211.endurance.dubbo.PrinterService
+dubbo>ls com.pandaq.dubbo.PrinterService
 getPrinterVendorName
 printText
 ```
@@ -65,7 +66,7 @@ java.lang.String getPrinterVendorName()
 void printText(java.lang.String)
 ```
 
-### 二、`ps` 命令
+### 2. `ps` 命令
 
 - `ps` —— 查看服务提供者的端口列表；
 - `ps -l` —— 查看服务提供者的地址列表；
@@ -86,28 +87,28 @@ dubbo>ps -l 20880
 /0:0:0:0:0:0:0:1:49358 -> /0:0:0:0:0:0:0:1:20880
 ```
 
-### 三、`cd`、`pwd` 命令
+### 3. `cd`、`pwd` 命令
 
 - `cd xxxService` —— 改变缺省服务。设置缺省服务可以不用每次都输入全限定名来使用服务，方便操作；
 - `cd /` —— 取消缺省服务，即不设置缺省服务；
 - `pwd` —— 使用 `pwd` 可以查看当前设置的缺省服务。
 
 ```bash
-dubbo>cd com.luzho211.endurance.dubbo.PrinterService
-Used the com.luzho211.endurance.dubbo.PrinterService as default.
+dubbo>cd com.pandaq.dubbo.PrinterService
+Used the com.pandaq.dubbo.PrinterService as default.
 You can cancel default service by command: cd /
 
 dubbo>pwd
-com.luzho211.endurance.dubbo.PrinterService
+com.pandaq.dubbo.PrinterService
 
 dubbo>cd /
-Cancelled default service com.luzho211.endurance.dubbo.PrinterService.
+Cancelled default service com.pandaq.dubbo.PrinterService.
 
 dubbo>pwd
 /
 ```
 
-### 四、`invoke` 命令
+### 4. `invoke` 命令
 
 >invoke命令用来调用 Dubbo 方法进行接口测试。可以省去接口全限定名而直接调用方法名，但是如果不同的接口服务包含了同一个方法名，就需要全限定名或者 xxxService.method 方式来调用。当 invoke 时匹配到了多个方法，也可以使用 `select` 命令来选择要掉用的方法，例如：select 1
 
@@ -117,13 +118,13 @@ null
 elapsed: 0 ms.
 ```
 
-### 五、`count` 命令：统计服务调用情况
+### 5. `count` 命令：统计服务调用情况
 
 - `count xxxService 5` —— 统计某接口服务下的所有方法的调用情况：统计5次
 - `count xxxService xxxMethod 5` —— 统计某接口服务下的某个方法的调用情况：统计5次
 
 ```bash
-dubbo>count com.luzho211.endurance.dubbo.PrinterService getPrinterVendorName 3
+dubbo>count com.pandaq.dubbo.PrinterService getPrinterVendorName 3
 +----------------------+-------+--------+--------+---------+-----+
 | method               | total | failed | active | average | max |
 +----------------------+-------+--------+--------+---------+-----+
@@ -143,7 +144,7 @@ dubbo>count com.luzho211.endurance.dubbo.PrinterService getPrinterVendorName 3
 +----------------------+-------+--------+--------+---------+-----+
 ```
 
-### 六、`status` 命令：查看服务的汇总情况
+### 6. `status` 命令：查看服务的汇总情况
 
 ```bash
 dubbo>status -l
