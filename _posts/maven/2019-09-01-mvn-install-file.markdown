@@ -18,7 +18,7 @@ tags: Maven
 
 ![mvn-install.png](/assets/images/2019-09/mvn-install.png)
 
-安装完毕，可以正常在项目的pom.xml文件中引入改依赖：
+安装完毕，可以正常在项目的pom.xml文件中引入该依赖：
 
 ```text
 <dependency>
