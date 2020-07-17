@@ -1,0 +1,52 @@
+---
+layout: post
+title: curl命令使用笔记
+subtitle: curl命令日常开发使用笔记&备忘录
+date: 2020-07-17 20:44:51.000000000 +08:00
+header-img: assets/images/tag-bg.jpg
+author: PandaQ
+tags:
+ - Linux
+ - curl
+---
+
+### 1. curl POST json body请求
+
+`curl –H "Content-Type:application/json" –X POST -d '{"k":"v"}' URL`
+
+举个例子：
+```bash
+$ curl –H "Content-Type:application/json" –X POST -d '{"username":"pandaq","password":"12345678"}' https://api.some.com/login
+```
+
+### 2. curl POST提交表单数据（form-data）
+
+##### 2.1 普通表单提交
+
+`curl -X POST –d "key=value&key=value" URL`
+
+例如模拟用户登录表单：
+
+```bash
+$ curl –d "username=pandaq&password=123456" https://api.some.com/login
+```
+
+##### 2.2 带文件上传的表单提交
+
+带文件上传的表单提交：`curl –F "key=@value" URL` （@符号来指定待上传文件）<br />
+
+```bash
+$ curl –F "file=@/etc/test.txt;filename=my-file" https://api.xx.com/upload
+```
+
+PS：分别用 file 和 filename 来指定文件目录和文件名
+
+多个文件上传可以使用多个 `-F` 来实现：
+
+```bash
+$ curl –F "file=@/etc/test1.txt;filename=my-file1" –F "file=@/etc/test2.txt;filename=my-file2" https://api.xx.com/upload
+```
+
+##### 参考文章
+
+1. <a href="http://www.ruanyifeng.com/blog/2019/09/curl-reference.html" target="_blank">http://www.ruanyifeng.com/blog/2019/09/curl-reference.html</a>
