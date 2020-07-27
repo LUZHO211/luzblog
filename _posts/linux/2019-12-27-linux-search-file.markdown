@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Linux查找文件的命令
+subtitle: 如何在Linux查找某个文件？
 date: 2019-12-27 17:28:34.000000000 +08:00
 header-img: assets/images/2019-12/linux.png
 author: PandaQ
