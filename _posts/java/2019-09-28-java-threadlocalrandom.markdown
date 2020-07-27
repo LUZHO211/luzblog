@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Java ThreadLocalRandom
+subtitle: Java中使用随机数生成类的笔记
 date: 2019-09-28 10:10:48.000000000 +08:00
 header-img: assets/images/tag-bg.jpg
 author: PandaQ

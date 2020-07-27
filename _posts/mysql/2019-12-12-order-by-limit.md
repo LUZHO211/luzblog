@@ -1,6 +1,7 @@
 ---
 layout: post
 title: MySQL分页+排序数据重复的问题
+subtitle: mysql分页查询数据重复问题记录
 date: 2019-12-12 11:03:43.000000000 +08:00
 tags: MySQL
 ---

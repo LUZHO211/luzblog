@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 【译】以生产者-消费者模型来阐释Java中如何正确使用wait，notify和notifyAll
+subtitle: 了解一下Java线程通信：wait/notify
 date: 2019-08-24 11:18:10.000000000 +08:00
 header-img: assets/images/tag-bg.jpg
 author: PandaQ
