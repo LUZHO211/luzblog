@@ -44,7 +44,7 @@ kramdown:
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "走<br>世界那么大，我想来看看"
-sidebar-avatar: /assets/images/avatar.jpeg      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: /assets/images/avatar1.jpeg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 # Featured Tags
 featured-tags: true                     # whether or not using Feature-Tags
@@ -57,60 +57,10 @@ service-worker: true
 # MathJax rendering for layout:page (e.g. post preview)
 page-mathjax: false
 
-# Disqus settings
-#disqus_username: hux
-
-# Netease settings
-#netease_comment: false
-
-# Analytics settings
-# Baidu Analytics
-# ba_track_id: [your track id]
-
-# Google Analytics
-#ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
-#ga_domain: huangxuan.me
-
-# SNS settings
-#RSS: false
-#weibo_username:     huxpro
-#zhihu_username:     huxpro
-#github_username:    huxpro
-#twitter_username:   huxpro
-#facebook_username:  huxpro
-#linkedin_username:  firstname-lastname-idxxxx
-
 # Friends
 #friends: [
 #    {
-#    #     title: "Su",
-#    #     href: "http://su.gallery/"
-#    # },{
-#        title: "乱序",
-#        href: "http://mida.re/"
-#    },{
-#        title: "Sherry Wu",
-#        href: "https://xuechundesign.github.io"
-#    },{
-#        title: "Luke 的自留地",
-#        href: "http://hmqk1995.github.io"
-#    },{
-#        title: "Ebn's Blog",
-#        href: "http://ebnbin.com/"
-#    },{
-#        title: "SmdCn's Blog",
-#        href: "http://blog.smdcn.net"
-#    },{
-#        title: "JiyinYiyong",
-#        href: "http://tiye.me/"
-#    },{
-#        title: "David's Game",
-#        href: "https://www.ruoyaowu.com/"
-#    },{
-#        title: "DHong Say",
-#        href: "http://dhong.co"
-#    },{
-#        title: "尹峰以为",
-#        href: "http://ingf.github.io/"
+#        title: "Su",
+#        href: "http://su.gallery/"
 #    }
 #]
