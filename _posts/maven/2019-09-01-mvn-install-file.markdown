@@ -8,8 +8,6 @@ author: PandaQ
 tags: Maven
 ---
 
-### 1. mvn install:install-file的使用
-
 有时候拿到一个第三方jar包，但是在中央仓库中并没有这个Maven依赖，为了顺利进行本地开发，可以先将该jar包安装到本地Maven仓库。例如有个`otpserver.jar`包，安装命令如下：
 
 
@@ -28,6 +26,6 @@ tags: Maven
 </dependency>
 ```
 
-### 2. 参考文章
+##### 参考文章
 
 1. <a href="https://maven.apache.org/plugins/maven-install-plugin/usage.html" target="_blank">https://maven.apache.org/plugins/maven-install-plugin/usage.html</a>
