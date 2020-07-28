@@ -3,16 +3,16 @@ layout: post
 title: Linux查找文件的命令
 subtitle: 如何在Linux查找某个文件？
 date: 2019-12-27 17:28:34.000000000 +08:00
-header-img: assets/images/2019-12/linux.png
+header-img: assets/images/tag-bg.jpg
 author: PandaQ
 tags: Linux
 ---
 
 日常开发中经常会用到Linux查找某个文件的命令，这里记录一下自己常用的几个。参考鸟哥的Linux学习网站：[鳥哥的 Linux 私房菜](http://linux.vbird.org)。
 
-### 一、find
+### 1. find
 
->Linux下最常见、最强大的文件查找命令算是find命令了。find命令直接搜索磁盘目录，虽然遍历磁盘目录效率低，但是却可以找到你想找的任何文件。
+Linux下最常见、最强大的文件查找命令算是find命令了。find命令直接搜索磁盘目录，虽然遍历磁盘目录效率低，但是却可以找到你想找的任何文件。
 
 ```
 find [PATH] [option] [action]
@@ -56,9 +56,9 @@ $ find / -name "*hosts*"
 
 通配符`*`可以匹配任意的字符。如果要找文件名以hosts开头的文件，则应该为`"hosts*"`；如果要找文件名以hosts结尾的文件，应该为`"*hosts"`。
 
-需要注意的是，find命令是直接搜索硬盘的，所以搜索时会比较消耗磁盘。
+需要注意的是，find命令是直接搜索硬盘的，所以搜索时会比较消耗磁盘IO。
 
-### 二、locate
+### 2. locate
 
 locate命令与find不同，它不会直接搜索硬盘，而是查询一个文件存档数据库：`var/lib/mlocate/mlocate.db`，所以locate的搜索效率会比find高很多。`var/lib/mlocate/mlocate.db`里面维护了硬盘里面所有文件的创建，但是一般情况下Linux只会每天通过扫描硬盘来更新这个数据库，这时候新建或者删除的文件才能感知到。也就是说，如果你现在新建一个文件，立即用locate来搜索，是搜索不到的。
 
@@ -93,7 +93,7 @@ $ locate test-file
 
 >updatedb命令会根据/etc/updatedb.conf配置文件中的配置去搜索对应的目录文件，然后更新/var/lib/mlocate目录中的文件档案数据库。
 
-### 三、which
+### 3. which
 
 which命令用于搜索可执行的命令文件，例如查找`vim`、`ls`、`touch`等命令，想知道某个Linux命令位于哪个目录下，用which就对了。which会根据PATH环境变量中设定的目录去查找命令文件。
 
@@ -112,7 +112,7 @@ $ which history
 搜索不到history，因为history是bash内建的命令，并不在PATH所指定的目录中。
 ```
 
-### 四、whereis
+### 4. whereis
 
 whereis命令跟find命令一样也是直接搜索硬盘，只不过whereis搜索的是特定的一些目录。使用`whereis -l`来查看whereis命令搜索的目录：
 
