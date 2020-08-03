@@ -12,38 +12,32 @@ tags: Java
 
 ### 1. Windows系统安装JDK
 
-*本文使用Windows 10系统版本来做演示；JDK版本为 1.8.0_221。*
+本文使用`Windows 7`系统版本来做演示；JDK版本为`1.8.0_221`。
 
-##### 1.1 下载并安装JDK
+- 到[Oracle官网](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)下载适合自己系统的JDK版本，本文使用`jdk-8u221-windows-x64.exe`版本。
+- 双击`exe`文件安装，并记录安装的目录，例如：`D:\Program files\Java\jdk1.8.0_221`。
 
-- 到[Oracle官网](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)下载适合自己系统的JDK版本，本文使用`jdk-8u221-windows-x64.exe`版本；
-- 双击 `exe` 文件安装，并记录安装的目录，例如：`D:\Program files\Java\jdk1.8.0_221`。
+安装完毕后，接下来创建系统环境变量：
 
-##### 1.2 配置Java环境变量
+- 环境变量`JAVA_HOME`，值就是JDK安装路径`D:\Program files\Java\jdk1.8.0_221`。
+- 编辑环境变量`Path`，在最左边加入`%JAVA_HOME%\bin;%JAVA_HOME%\jre\bin;`。
 
+环境变量配置完毕，在命令行执行`java -version`或`javac`验证安装以及环境变量配置是否OK。
 
 ### 2. Linux系统安装JDK
 
-*本文使用Ubuntu 16.04.6 LTS系统版本来做演示；JDK版本为 1.8.0_221。*
-
-##### 2.1 下载并解压（安装）JDK
+本文使用Ubuntu 16.04.6 LTS系统版本来做演示；JDK版本为 1.8.0_221。
 
 - 到[Oracle官网](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)下载适合自己系统的JDK版本，本文使用`jdk-8u221-linux-x64.tar.gz`版本；
-- 将下载的文件放到某个目录下，例如：`/usr/local`
+- 将下载的文件放到某个目录下（例如：`/usr/local`）并解压。
 
 ```bash
-$ mv jdk-8u221-linux-x64.tar.gz /usr/local/
+$ mv jdk-8u221-linux-x64.tar.gz /usr/local/ && cd /usr/local/ && tar -zxvf jdk-8u221-linux-x64.tar.gz
 ```
 
-- 解压文件，将得到`jdk1.8.0_221`文件夹：
+解压之后将得到`jdk1.8.0_221`文件夹。**即，JDK的安装路径为：`/usr/local/jdk1.8.0_221`，后面环境变量`JAVA_HOME`就是设置成JDK的安装路径。**
 
-```bash
-$ cd /usr/local/ && tar -zxvf jdk-8u221-linux-x64.tar.gz
-```
-
-**即，JDK的安装路径为：`/usr/local/jdk1.8.0_221`，后面环境变量`JAVA_HOME`就是设置成JDK的安装路径。**
-
-##### 2.2 配置Java环境变量
+配置Java环境变量：
 
 - 在用户主目录下编辑`.bashrc`文件（`vim ~/.bashrc`），在文件尾部追加以下内容：
 
@@ -66,14 +60,12 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.221-b11, mixed mode)
 
 ### 3. Mac OS系统安装JDK
 
-*本文使用macOS Mojave 10.14.6系统版本来做演示；JDK版本为 1.8.0_221。*
-
-##### 3.1 下载并解压（安装）JDK下载并安装JDK
+本文使用`macOS Mojave 10.14.6`系统版本来做演示；JDK版本为`1.8.0_221`。
 
 - 到[Oracle官网](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)下载适合自己系统的JDK版本，本文使用`jdk-8u221-macosx-x64.dmg`版本。
 - 下载完毕后，双击`jdk-8u221-macosx-x64.dmg`文件，按照引导一路点击下去即可完成安装。
 
-##### 3.2 下载并解压（安装）JDK配置Java环境变量
+配置Java环境变量：
 
 - 打开终端，执行`/usr/libexec/java_home -V`指令来查看JDK的安装路径：
 
@@ -85,9 +77,9 @@ Matching Java Virtual Machines (1):
 /Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home
 ```
 
-**`/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home`即JDK的安装目录，后面配置`JAVA_HOME`环境变量会使用到。**
+**`/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home`就是JDK的安装路径，后面配置`JAVA_HOME`环境变量会使用到该路径。**
 
-- 编辑用户主目录下的`.bash_profile`（`vim ~/.bash_profile`），在文件中加入以下内容：
+- `vim ~/.bash_profile`编辑用户主目录下的`.bash_profile`文件，在文件中加入以下内容：
 
 ```bash
 JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home
