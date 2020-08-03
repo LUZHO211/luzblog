@@ -26,7 +26,7 @@ tags: Java
 
 ### 2. Linux系统安装JDK
 
-本文使用Ubuntu 16.04.6 LTS系统版本来做演示；JDK版本为 1.8.0_221。
+本文使用`Ubuntu 16.04.6 LTS`系统版本来做演示；JDK版本为`1.8.0_221`。
 
 - 到[Oracle官网](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)下载适合自己系统的JDK版本，本文使用`jdk-8u221-linux-x64.tar.gz`版本；
 - 将下载的文件放到某个目录下（例如：`/usr/local`）并解压。
