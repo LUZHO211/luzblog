@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 设计模式系列「1」：策略模式
+title: 设计模式系列(1)：策略模式
 subtitle: 策略模式在Java中的应用
 date: 2019-12-28 01:00:00.000000000 +08:00
 header-img: assets/images/tag-bg.jpg
