@@ -72,7 +72,11 @@ public class OrderServiceImpl implements OrderService {
 ![enableAspectJAutoProxy.png](/assets/images/2020-09/enableAspectJAutoProxy.png)
 ![aop-context.png](/assets/images/2020-09/aop-context.png)
 
-但是如果直接调用`createOrder()`就没有走代理，直接走的普通方法调用：
+**但是注意，`@EnableAspectJAutoProxy(exposeProxy = true)`不能保证一定能够正确工作：**
+
+![EnableAspectJAutoProxy-exposeProxy.png](/assets/images/2020-09/EnableAspectJAutoProxy-exposeProxy.png)
+
+如果直接调用`createOrder()`就没有走代理，直接走的普通方法调用：
 
 ```java
 @Service
